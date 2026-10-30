@@ -26,7 +26,11 @@
     sessionStorage.setItem(storageName,raw);
     const next=new URLSearchParams(location.search).get('next')||config.entry;
     const clean=decodeURIComponent(next).replace(/^\/+/, '');
-    const target=manifest[clean]?new URL(clean,base):new URL(config.entry,base);
+    const requested=new URL(clean,base);
+    const local=requested.origin===base.origin&&requested.pathname.startsWith(base.pathname);
+    let entry=local?decodeURIComponent(requested.pathname.slice(base.pathname.length)):'';
+    if(entry.endsWith('/'))entry+='index.html';
+    const target=local&&manifest[entry]?requested:new URL(config.entry,base);
     location.replace(target.href);
   }
   async function start(){

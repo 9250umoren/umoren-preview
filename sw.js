@@ -28,7 +28,8 @@ async function restore(){
 self.addEventListener('fetch',event=>{
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin||!url.pathname.startsWith(scopePath))return;
-  const rel=decodeURIComponent(url.pathname.slice(scopePath.length));
+  const rawRel=decodeURIComponent(url.pathname.slice(scopePath.length));
+  const rel=rawRel&&rawRel.endsWith('/')?rawRel+'index.html':rawRel;
   if(publicPaths.has(rel)||rel.startsWith('vault/'))return;
   event.respondWith((async()=>{
     await restore();
